@@ -14,6 +14,6 @@ export async function gitTest() {
 }
 
 export async function gitRepos() {
-  const repos = await octokit.rest.repos.listForAuthenticatedUser();
+  const repos = await octokit.rest.repos.listForOrg({ org: "ghosty-labz" });
   return repos;
 }
