@@ -33,7 +33,7 @@ const chartConfig = {
 
 export function CommitChart() {
   return (
-    <Card className="col-span-4">
+    <Card className="col-span-3">
       <CardHeader>
         <CardTitle>Bar Chart</CardTitle>
         <CardDescription>January - June 2024</CardDescription>

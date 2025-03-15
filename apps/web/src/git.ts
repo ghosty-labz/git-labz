@@ -4,6 +4,7 @@ export interface Commit {
   repo: string;
   sha: string;
   message: string;
+  author: string;
 }
 
 // Create a personal access token at https://github.com/settings/tokens/new?scopes=repo
@@ -46,12 +47,13 @@ export async function getCommitsForAllRepos(): Promise<Commit[]> {
         repo: repo.name,
         sha: commit.sha,
         message: commit.commit.message,
+        author: commit.commit.author?.name,
       }));
     });
 
     // Flatten the array of arrays into one array of commits
     const commitsByRepo = await Promise.all(commitPromises);
-    return commitsByRepo.flat();
+    return commitsByRepo.flat().slice(0, 5);
   } catch (error) {
     console.error("Error fetching commits:", error);
     return [];

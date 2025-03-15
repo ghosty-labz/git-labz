@@ -1,7 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { gitTest, gitRepos, getCommitsForAllRepos } from "@/git";
-import { GitCommitHorizontal, GitMerge, Rocket } from "lucide-react";
+import {
+  GitCommitHorizontal,
+  GitMerge,
+  Rocket,
+  GitCommitVertical,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import {
@@ -119,18 +124,29 @@ function Index() {
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 max-h-80 p-4 max-w-3/4 mx-auto">
-        {/* <CommitChart /> */}
-        <Card className="col-span-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 p-4 max-w-3/4 mx-auto">
+        <CommitChart />
+        <Card className="col-span-4">
           <CardHeader>
             <CardTitle className="flex justify-between">
-              <div>Total Commits</div>
+              <div>Recent Commits</div>
               <GitCommitHorizontal />
             </CardTitle>
           </CardHeader>
           <CardContent>
             {commits.map((commit) => (
-              <div key={commit.sha}>{commit.message}</div>
+              <div className="border-2 rounded-md p-2 mb-2" key={commit.sha}>
+                <div className="flex">
+                  <div>
+                    [{commit.repo}] {commit.message}
+                  </div>
+                  <div>
+                    <GitCommitVertical />
+                    <span>{commit.sha}</span>
+                  </div>
+                  <div>{commit.author}</div>
+                </div>
+              </div>
             ))}
           </CardContent>
         </Card>
