@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { gitTest, gitRepos, getCommitsForAllRepos } from "@/git";
+import {
+  gitTest,
+  gitRepos,
+  getCommitsForAllRepos,
+  getTotalCommitsForOrg,
+} from "@/git";
 import {
   GitCommitHorizontal,
   GitMerge,
@@ -17,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CommitChart } from "@/components/charts/testChart";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -25,6 +31,7 @@ export const Route = createFileRoute("/")({
 
 const repos = await gitRepos();
 const commits = await getCommitsForAllRepos();
+const totalCommits = await getTotalCommitsForOrg("ghosty-labz");
 
 function Index() {
   const gitUser = Route.useLoaderData();
@@ -75,7 +82,7 @@ function Index() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+2,000</div>
+            <div className="text-2xl font-bold">+{totalCommits}</div>
             <p className="text-xs text-muted-foreground">
               some cool stuff here
             </p>
@@ -135,16 +142,26 @@ function Index() {
           </CardHeader>
           <CardContent>
             {commits.map((commit) => (
-              <div className="border-2 rounded-md p-2 mb-2" key={commit.sha}>
-                <div className="flex">
-                  <div>
-                    [{commit.repo}] {commit.message}
+              <div className="border-2 rounded-md mb-2" key={commit.sha}>
+                <div>
+                  <div className="border-b-2 flex">
+                    <div className="p-2">
+                      <Avatar>
+                        <AvatarImage src={commit.committerAvatar} />
+                        <AvatarFallback>GV</AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="p-2">
+                      [{commit.repo}] {commit.message}
+                    </div>
                   </div>
-                  <div>
-                    <GitCommitVertical />
-                    <span>{commit.sha}</span>
+                  <div className="flex p-2">
+                    <div className="flex">
+                      <GitCommitVertical />
+                      <span>{commit.sha.slice(0, 7)}</span>
+                    </div>
+                    <div className="ml-2">{commit.committer}</div>
                   </div>
-                  <div>{commit.author}</div>
                 </div>
               </div>
             ))}
