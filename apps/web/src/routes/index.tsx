@@ -5,6 +5,7 @@ import {
   gitRepos,
   getCommitsForAllRepos,
   getTotalCommitsForOrg,
+  getMonthlyCommitStatsForOrg,
 } from "@/git";
 import {
   GitCommitHorizontal,
@@ -32,6 +33,8 @@ export const Route = createFileRoute("/")({
 const repos = await gitRepos();
 const commits = await getCommitsForAllRepos();
 const totalCommits = await getTotalCommitsForOrg("ghosty-labz");
+const { stats, trendingPercentage } =
+  await getMonthlyCommitStatsForOrg("ghosty-labz");
 
 function Index() {
   const gitUser = Route.useLoaderData();
@@ -132,7 +135,7 @@ function Index() {
         </Card>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 p-4 max-w-3/4 mx-auto">
-        <CommitChart />
+        <CommitChart stats={stats} trendingPercentage={trendingPercentage} />
         <Card className="col-span-4">
           <CardHeader>
             <CardTitle className="flex justify-between">

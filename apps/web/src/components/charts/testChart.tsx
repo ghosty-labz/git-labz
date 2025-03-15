@@ -16,31 +16,31 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
+  { month: "January", commits: 186 },
+  { month: "February", commits: 305 },
+  { month: "March", commits: 237 },
+  { month: "April", commits: 73 },
+  { month: "May", commits: 209 },
+  { month: "June", commits: 214 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  commits: {
+    label: "Commits",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
-export function CommitChart() {
+export function CommitChart({ stats, trendingPercentage }) {
   return (
     <Card className="col-span-3">
       <CardHeader>
-        <CardTitle>Bar Chart</CardTitle>
+        <CardTitle>Commits</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
+          <BarChart accessibilityLayer data={stats}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
@@ -53,16 +53,17 @@ export function CommitChart() {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8} />
+            <Bar dataKey="commits" fill="var(--color-commits)" radius={8} />
           </BarChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          Trending up by {trendingPercentage}% this month{" "}
+          <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Showing total commits for the last 6 months
         </div>
       </CardFooter>
     </Card>
