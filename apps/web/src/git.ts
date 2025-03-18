@@ -4,6 +4,7 @@ export interface Commit {
   repo: string;
   sha: string;
   message: string;
+  date: string;
 }
 
 export interface MonthlyCommitStats {
@@ -196,4 +197,54 @@ export async function getMonthlyCommitStatsForOrg(
   }
 
   return { stats: monthlyStats, trendingPercentage };
+}
+
+/**
+ * Fetches 30 commits from each repository in the given organization,
+ * sorts all the commits by date (most recent first), and returns the top 30.
+ *
+ * @param org - The GitHub organization name.
+ * @returns A promise that resolves to an array of the 30 most recent commit objects.
+ */
+export async function getLatest30CommitsForOrg(org: string): Promise<Commit[]> {
+  // Retrieve all repositories for the organization
+  const repos = await octokit.paginate(octokit.rest.repos.listForOrg, {
+    org,
+    type: "all",
+    per_page: 100,
+  });
+
+  // For each repository, fetch the last 30 commits.
+  const commitPromises = repos.map(async (repo) => {
+    try {
+      const commitsResponse = await octokit.rest.repos.listCommits({
+        owner: org,
+        repo: repo.name,
+        per_page: 30,
+      });
+
+      // Map each commit to a simplified commit object
+      return commitsResponse.data.map((commit) => ({
+        repo: repo.name,
+        sha: commit.sha,
+        message: commit.commit.message,
+        date: commit.commit.author?.date, // Use the commit author date
+      }));
+    } catch (error) {
+      console.error(`Error fetching commits for repo ${repo.name}:`, error);
+      return [];
+    }
+  });
+
+  // Wait for all commit fetches and flatten the results into one array
+  const commitsByRepo = await Promise.all(commitPromises);
+  const allCommits = commitsByRepo.flat();
+
+  // Sort commits by date descending (most recent first)
+  const sortedCommits = allCommits.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  // Return only the top 30 most recent commits overall
+  return sortedCommits.slice(0, 30);
 }
