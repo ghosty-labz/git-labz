@@ -1,30 +1,21 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import { SQSEvent, Context, SQSHandler, SQSRecord } from 'aws-lambda';
 
-/**
- *
- * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
- * @param {Object} event - API Gateway Lambda Proxy Input Format
- *
- * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
- * @returns {Object} object - API Gateway Lambda Proxy Output Format
- *
- */
-
-export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    try {
-        return {
-            statusCode: 200,
-            body: JSON.stringify({
-                message: 'hello world',
-            }),
-        };
-    } catch (err) {
-        console.log(err);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({
-                message: 'some error happened',
-            }),
-        };
+export const functionHandler: SQSHandler = async (event: SQSEvent, context: Context): Promise<void> => {
+    for (const message of event.Records) {
+        await processMessageAsync(message);
     }
+    console.info('done');
 };
+
+async function processMessageAsync(message: SQSRecord): Promise<any> {
+    try {
+        console.log(`Processed message ${message.body}`);
+        // TODO: Do interesting work based on the new message
+        await Promise.resolve(1); //Placeholder for actual async work
+    } catch (err) {
+        console.error('An error occurred');
+        throw err;
+    }
+}
